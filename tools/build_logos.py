@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
-"""Generate the full Niyakrish brand identity: logos, variants and mockups.
+"""Generate the full NIYA brand identity: logos, variants and mockups.
 
-Lettering is converted to vector outlines (Liberation Sans Bold) with
-fontTools, so every SVG is fully self-contained. PNG previews are rendered
-with cairosvg.
+v2 — engineered identity:
+  * Mark: a monolithic letter N — two solid precast columns with masonry
+    joint lines, an orange structural diagonal, a stepped tower crown and
+    a deep-blue foundation slab.
+  * Wordmark NIYA: fully custom squared industrial letterforms (drawn as
+    polygons, no font), in the language of engineering corporations.
+
+Small/utility text uses Liberation Sans converted to outlines with
+fontTools, so every SVG is fully self-contained. PNG previews are
+rendered with cairosvg.
 """
 
 import math
 import os
 
 import cairosvg
-from fontTools.misc.transform import Transform
 from fontTools.pens.svgPathPen import SVGPathPen
-from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +34,7 @@ REGULAR = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
 
 
 class TextEngine:
-    """Renders text as SVG path outlines using a TTF font."""
+    """Renders text as SVG path outlines using a TTF font (utility text)."""
 
     def __init__(self, path):
         self.font = TTFont(path)
@@ -48,13 +53,18 @@ class TextEngine:
         units = sum(self._advance(c) for c in text) / self.upem
         return target_w / (units + track_em * max(len(text) - 1, 0))
 
+    def track_to_fit(self, text, size, target_w):
+        """Letter-spacing (em) that justifies text to target_w."""
+        base = self.width(text, size, 0.0)
+        n = max(len(text) - 1, 1)
+        return max((target_w - base) / (size * n), 0.0)
+
     def _glyph_d(self, ch):
         pen = SVGPathPen(self.glyphs)
         self.glyphs[self.cmap[ord(ch)]].draw(pen)
         return pen.getCommands()
 
     def text(self, text, size, x, y, fill, track_em=0.0, anchor="start"):
-        """Text laid out on baseline y. anchor: start|middle|end."""
         s = size / self.upem
         w = self.width(text, size, track_em)
         if anchor == "middle":
@@ -77,7 +87,6 @@ class TextEngine:
         return "".join(out)
 
     def arc_text(self, text, size, cx, cy, r, fill, track_em=0.0, bottom=False):
-        """Text along a circle. Top arc reads clockwise, bottom arc upright."""
         s = size / self.upem
         advs = [self._advance(c) * s + track_em * size for c in text]
         total = sum(advs) - (track_em * size if text else 0)
@@ -103,29 +112,119 @@ class TextEngine:
         return "".join(out)
 
 
+# ----------------------------------------------- custom brand typeface ----
+# Squared industrial capitals drawn on a 100-unit cap-height grid,
+# stroke weight 24. y grows downward, baseline at 100.
+# Each entry: (advance, path-d). Holes use even-odd fill.
+GLYPHS = {
+    "N": (72, "M0 100 L0 0 L24 0 L48 52 L48 0 L72 0 L72 100 L48 100 "
+              "L24 48 L24 100 Z"),
+    "I": (24, "M0 0 L24 0 L24 100 L0 100 Z"),
+    "Y": (72, "M0 0 L25 0 L36 26 L47 0 L72 0 L48 50 L48 100 L24 100 "
+              "L24 50 Z"),
+    "A": (78, "M26 0 L52 0 L78 100 L54 100 L48 80 L30 80 L24 100 L0 100 Z "
+              "M34.5 60 L43.5 60 L39 36 Z"),
+    "K": (76, "M0 0 L24 0 L24 36 L50 0 L76 0 L43 44 L76 100 L49 100 "
+              "L24 64 L24 100 L0 100 Z"),
+    "R": (76, "M0 0 L74 0 L74 54 L52 54 L76 100 L50 100 L29 54 L24 54 "
+              "L24 100 L0 100 Z M24 20 L50 20 L50 34 L24 34 Z"),
+    "S": (68, "M0 0 L68 0 L68 22 L22 22 L22 39 L68 39 L68 100 L0 100 "
+              "L0 78 L46 78 L46 61 L0 61 Z"),
+    "H": (72, "M0 0 L24 0 L24 39 L48 39 L48 0 L72 0 L72 100 L48 100 "
+              "L48 61 L24 61 L24 100 L0 100 Z"),
+}
+XW = 1.08  # horizontal extension factor — premium "extended" stance
+KERN = {("Y", "A"): -12, ("A", "Y"): -12}  # optical pair corrections
+
+
+class BrandType:
+    """The custom NIYA letterforms. Sizes are cap heights."""
+
+    def _advance(self, ch):
+        return GLYPHS[ch][0] * XW if ch in GLYPHS else 40.0
+
+    def _advances(self, text):
+        out = []
+        for i, ch in enumerate(text):
+            a = self._advance(ch)
+            if i + 1 < len(text):
+                a += KERN.get((ch, text[i + 1]), 0) * XW
+            out.append(a)
+        return out
+
+    def width(self, text, cap, track_em=0.0):
+        units = sum(self._advances(text))
+        return cap * units / 100 + track_em * cap * max(len(text) - 1, 0)
+
+    def fit_size(self, text, target_w, track_em=0.0):
+        units = sum(self._advances(text)) / 100
+        return target_w / (units + track_em * max(len(text) - 1, 0))
+
+    def text(self, text, cap, x, y, fill, track_em=0.0, anchor="start"):
+        s = cap / 100
+        w = self.width(text, cap, track_em)
+        if anchor == "middle":
+            x -= w / 2
+        elif anchor == "end":
+            x -= w
+        out = [f'<g fill="{fill}" fill-rule="evenodd">']
+        cx = x
+        for ch, au in zip(text, self._advances(text)):
+            adv = au * s + track_em * cap
+            if ch in GLYPHS:
+                out.append(
+                    f'<path transform="translate({cx:.2f} {y - cap:.2f}) '
+                    f'scale({s * XW:.6f} {s:.6f})" d="{GLYPHS[ch][1]}"/>'
+                )
+            cx += adv
+        out.append("</g>")
+        return "".join(out)
+
+    def arc_text(self, text, cap, cx, cy, r, fill, track_em=0.0):
+        s = cap / 100
+        advs = [a * s + track_em * cap for a in self._advances(text)]
+        total = sum(advs) - (track_em * cap if text else 0)
+        theta = total / r
+        out = [f'<g fill="{fill}" fill-rule="evenodd">']
+        acc = 0.0
+        for ch, a in zip(text, advs):
+            mid = acc + (a - track_em * cap) / 2
+            acc += a
+            ang = -theta / 2 + mid / r
+            if ch not in GLYPHS:
+                continue
+            xoff = cx - (a - track_em * cap) / 2
+            out.append(
+                f'<path transform="rotate({math.degrees(ang):.3f} {cx} {cy}) '
+                f'translate({xoff:.2f} {cy - r - cap:.2f}) '
+                f'scale({s * XW:.6f} {s:.6f})" d="{GLYPHS[ch][1]}"/>'
+            )
+        out.append("</g>")
+        return "".join(out)
+
+
 bold = TextEngine(BOLD)
 reg = TextEngine(REGULAR)
+brand = BrandType()
 
 
 # ---------------------------------------------------------------- icon ----
-# Design space of the icon: x 28..172, y 30..192 (w=144, h=162) in a 200 grid.
-ICON_X, ICON_Y, ICON_W, ICON_H = 28, 30, 144, 162
+# Design space of the mark: x 0..168, y 24..194 (w=168, h=170).
+ICON_X, ICON_Y, ICON_W, ICON_H = 0, 24, 168, 170
 
 
 def icon(grey=GREY, orange=ORANGE, blue=BLUE, tx=0.0, ty=0.0, s=1.0):
-    """The Niyakrish mark: an N built from concrete blocks, a structural
-    diagonal beam, a stepped tower top and a foundation slab."""
-    blocks = []
-    for y in (150, 120, 90, 60):                     # left column - 4 courses
-        blocks.append((40, y, 36, 26))
-    for y in (150, 120, 90, 60):                     # right column - 4 courses
-        blocks.append((124, y, 36, 26))
-    blocks.append((124, 30, 24, 26))                 # tower setback course
+    """The NIYA mark, v2: a monolithic N — solid precast columns with
+    masonry joints, structural diagonal, stepped tower crown, foundation."""
     g = [f'<g transform="translate({tx:.2f} {ty:.2f}) scale({s:.4f})">']
-    for x, y, w, h in blocks:
-        g.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{grey}"/>')
-    g.append(f'<polygon points="40,60 76,60 160,176 124,176" fill="{orange}"/>')
-    g.append(f'<rect x="28" y="180" width="144" height="12" fill="{blue}"/>')
+    g.append(f'<rect x="12" y="40" width="42" height="136" fill="{grey}"/>')
+    g.append(f'<rect x="114" y="52" width="42" height="124" fill="{grey}"/>')
+    g.append(f'<rect x="114" y="24" width="28" height="24" fill="{grey}"/>')
+    for y in (86, 130):                                  # precast joint lines
+        g.append(f'<rect x="12" y="{y}" width="42" height="4" fill="{WHITE}"/>')
+        g.append(f'<rect x="114" y="{y}" width="42" height="4" fill="{WHITE}"/>')
+    g.append(f'<polygon points="12,40 54,40 156,176 114,176" fill="{orange}"/>')
+    g.append(f'<rect x="0" y="182" width="168" height="12" fill="{blue}"/>')
     g.append("</g>")
     return "".join(g)
 
@@ -150,57 +249,67 @@ def write(relpath, content):
 def render(svg_rel, png_rel, width):
     cairosvg.svg2png(
         url=os.path.join(ROOT, svg_rel),
-        write_to=os.path.join(ROOT, png_rel.replace("svg", "png", 1)
-                              if False else png_rel),
+        write_to=os.path.join(ROOT, png_rel),
         output_width=width,
     )
 
 
 # ------------------------------------------------------- logo lockups ----
-WORD = "NIYAKRISH"
-TAGLINE = "CONCRETE  •  BLOCKS  •  INFRASTRUCTURE"
+WORD = "NIYA"
+TAG_SHORT = "CONSTRUCTION MATERIALS"
+TAG_FULL = "CONCRETE  •  BLOCKS  •  INFRASTRUCTURE"
 
 
-def wordmark(x, y, size, fill, accent, anchor="start", track_em=0.06):
-    """NIYAKRISH wordmark with the orange block full-stop."""
-    w = bold.width(WORD, size, track_em)
+def wordmark(x, y, cap, fill, accent, anchor="start", track_em=0.18):
+    """NIYA in the custom letterforms, with the orange block full-stop."""
+    w = brand.width(WORD, cap, track_em)
+    sq = 0.22 * cap
+    full = w + 0.18 * cap + sq
     if anchor == "middle":
-        x -= (w + 0.30 * size) / 2
+        x -= full / 2
     elif anchor == "end":
-        x -= w + 0.30 * size
-    sq = 0.16 * size
-    parts = [bold.text(WORD, size, x, y, fill, track_em)]
+        x -= full
+    parts = [brand.text(WORD, cap, x, y, fill, track_em)]
     parts.append(
-        f'<rect x="{x + w + 0.14 * size:.2f}" y="{y - sq:.2f}" '
+        f'<rect x="{x + w + 0.18 * cap:.2f}" y="{y - sq:.2f}" '
         f'width="{sq:.2f}" height="{sq:.2f}" fill="{accent}"/>'
     )
     return "".join(parts)
 
 
+def wm_full_width(cap, track_em=0.18):
+    return brand.width(WORD, cap, track_em) + 0.40 * cap
+
+
 def logo_primary(grey, orange, blue, tag_fill, bg=None):
-    W, H = 760, 560
+    W, H = 480, 540
     body = []
-    s = 1.62
+    s = 1.5
     body.append(icon(grey, orange, blue,
                      tx=W / 2 - (ICON_X + ICON_W / 2) * s, ty=40 - ICON_Y * s, s=s))
-    size = bold.fit_size(WORD, 540, 0.06)
-    body.append(wordmark(W / 2, 430, size, blue, orange, anchor="middle"))
-    tsize = 23.5
-    body.append(bold.text(TAGLINE, tsize, W / 2, 488, tag_fill, 0.14, "middle"))
+    cap = 95
+    body.append(wordmark(W / 2, 450, cap, blue, orange, anchor="middle"))
+    tsize = 20
+    tw = wm_full_width(cap) - 6
+    track = bold.track_to_fit(TAG_SHORT, tsize, tw)
+    body.append(bold.text(TAG_SHORT, tsize, W / 2, 502, tag_fill, track, "middle"))
     return svg(W, H, "".join(body), bg)
 
 
 def logo_horizontal(grey, orange, blue, tag_fill, bg=None):
-    W, H = 1280, 330
+    W, H = 900, 340
     body = []
-    s = 1.52
+    s = 1.45
     body.append(icon(grey, orange, blue, tx=64 - ICON_X * s,
                      ty=H / 2 - (ICON_Y + ICON_H / 2) * s, s=s))
-    x0 = 64 + ICON_W * 1.52 + 64
-    body.append(f'<rect x="{x0 - 32}" y="55" width="3" height="220" fill="#D1D5DB"/>')
-    size = bold.fit_size(WORD, 820, 0.05)
-    body.append(wordmark(x0, 192, size, blue, orange, track_em=0.05))
-    body.append(bold.text(TAGLINE, 27, x0 + 4, 248, tag_fill, 0.135))
+    x0 = 64 + ICON_W * s + 68
+    body.append(f'<rect x="{x0 - 34}" y="58" width="3" height="224" fill="#D1D5DB"/>')
+    cap = 128
+    body.append(wordmark(x0, 190, cap, blue, orange, track_em=0.16))
+    tsize = 22
+    tw = brand.width(WORD, cap, 0.16) + 0.40 * cap
+    track = bold.track_to_fit(TAG_SHORT, tsize, tw)
+    body.append(bold.text(TAG_SHORT, tsize, x0 + 2, 248, tag_fill, track))
     return svg(W, H, "".join(body), bg)
 
 
@@ -214,7 +323,7 @@ def logo_monogram(grey, orange, blue, bg=None):
 def logo_app_icon():
     W = 512
     body = [f'<rect width="{W}" height="{W}" rx="100" fill="{BLUE}"/>']
-    s = 1.72
+    s = 1.55
     body.append(icon(WHITE, ORANGE, WHITE,
                      tx=W / 2 - (ICON_X + ICON_W / 2) * s,
                      ty=W / 2 - (ICON_Y + ICON_H / 2) * s, s=s))
@@ -230,9 +339,9 @@ def logo_emblem():
         f'<circle cx="{c}" cy="{c}" r="155" fill="none" stroke="{ORANGE}" stroke-width="4"/>',
     ]
     body.append(icon(GREY, ORANGE, BLUE,
-                     tx=c - (ICON_X + ICON_W / 2) * 1.06,
-                     ty=c - (ICON_Y + ICON_H / 2) * 1.06, s=1.06))
-    body.append(bold.arc_text(WORD, 40, c, c, 166, WHITE, 0.14))
+                     tx=c - (ICON_X + ICON_W / 2) * 0.96,
+                     ty=c - (ICON_Y + ICON_H / 2) * 0.96, s=0.96))
+    body.append(brand.arc_text(WORD, 34, c, c, 164, WHITE, 0.85))
     body.append(bold.arc_text("CONSTRUCTION MATERIALS", 22, c, c, 186,
                               LIGHT, 0.12, bottom=True))
     for sgn in (-1, 1):
@@ -275,7 +384,7 @@ def mockup_truck():
     b.append(f'<rect x="138" y="530" width="24" height="64" fill="{ORANGE}"/>')
     b.append('<rect x="146" y="480" width="14" height="26" fill="#FACC15"/>')
     b.append('<rect x="290" y="348" width="5" height="246" fill="#0B1120"/>')
-    b.append(icon(WHITE, ORANGE, WHITE, tx=300, ty=455, s=0.42))
+    b.append(icon(WHITE, ORANGE, WHITE, tx=302, ty=460, s=0.36))
 
     # rear pedestal + charge hopper
     b.append('<polygon points="915,560 1055,560 1025,420 945,420" fill="#4A4A4A"/>')
@@ -300,9 +409,9 @@ def mockup_truck():
     b.append(f'<rect x="{cx + 168}" y="{cy - 120}" width="64" height="240" '
              f'fill="{BLUE}" transform="rotate(18 {cx + 195} {cy})"/>')
     b.append("</g>")
-    size = bold.fit_size(WORD, 270, 0.05)
-    b.append(wordmark(cx + 5, cy + 8, size, BLUE, ORANGE, anchor="middle", track_em=0.05))
-    b.append(bold.text("READY MIX CONCRETE", 21, cx + 5, cy + 48, ORANGE, 0.12, "middle"))
+    b.append(wordmark(cx + 5, cy + 12, 62, BLUE, ORANGE, anchor="middle",
+                      track_em=0.16))
+    b.append(bold.text("READY MIX CONCRETE", 22, cx + 5, cy + 52, ORANGE, 0.12, "middle"))
     b.append("</g>")
 
     # wheels & guards
@@ -312,7 +421,7 @@ def mockup_truck():
         b.append(wheel(cxw))
     b.append('<rect x="830" y="566" width="360" height="14" fill="#111827"/>')
 
-    b.append(bold.text("NIYAKRISH READY MIX CONCRETE  •  TRUCK BRANDING CONCEPT",
+    b.append(bold.text("NIYA READY MIX CONCRETE  •  TRUCK BRANDING CONCEPT",
                        20, W / 2, 770, "#9CA3AF", 0.1, "middle"))
     return svg(W, H, "".join(b))
 
@@ -337,13 +446,16 @@ def mockup_signboard():
     # fascia sign
     b.append(f'<rect x="80" y="230" width="1240" height="160" fill="{BLUE}"/>')
     b.append(f'<rect x="80" y="390" width="1240" height="12" fill="{ORANGE}"/>')
-    s = 0.78
-    ix = 330
+    s = 0.72
+    ix = 400
     b.append(icon(WHITE, ORANGE, WHITE, tx=ix - ICON_X * s,
                   ty=310 - (ICON_Y + ICON_H / 2) * s, s=s))
-    size = bold.fit_size(WORD, 520, 0.06)
-    b.append(wordmark(ix + ICON_W * s + 50, 330, size, WHITE, ORANGE))
-    b.append(bold.text(TAGLINE, 19, ix + ICON_W * s + 54, 362, LIGHT, 0.13))
+    x0 = ix + ICON_W * s + 52
+    cap = 86
+    b.append(wordmark(x0, 326, cap, WHITE, ORANGE, track_em=0.16))
+    tw = brand.width(WORD, cap, 0.16) + 0.40 * cap
+    track = bold.track_to_fit(TAG_FULL, 17, tw)
+    b.append(bold.text(TAG_FULL, 17, x0 + 1, 358, LIGHT, track))
     # block pallets in the yard
     for px, py in ((150, 560), (330, 585)):
         for r in range(3):
@@ -373,14 +485,15 @@ def mockup_business_card():
     front.append(f'<g clip-path="url(#cardf)">'
                  f'<rect y="{CH - 16}" width="{CW}" height="16" fill="{ORANGE}"/>'
                  f'<rect y="{CH - 16}" width="150" height="16" fill="{BLUE}"/></g>')
-    front.append(icon(GREY, ORANGE, BLUE, tx=36 - ICON_X * 0.5, ty=34 - ICON_Y * 0.5, s=0.5))
-    front.append(wordmark(128, 76, 34, BLUE, ORANGE, track_em=0.05))
-    front.append(bold.text("CONCRETE • BLOCKS • INFRASTRUCTURE", 11.5, 130, 98, GREY, 0.1))
+    front.append(icon(GREY, ORANGE, BLUE, tx=36 - ICON_X * 0.42,
+                      ty=32 - ICON_Y * 0.42, s=0.42))
+    front.append(wordmark(124, 76, 34, BLUE, ORANGE, track_em=0.16))
+    front.append(bold.text("CONSTRUCTION MATERIALS", 12.5, 126, 96, GREY, 0.12))
     front.append(bold.text("PAVAN KUMAR", 25, 36, 182, BLUE, 0.04))
     front.append(reg.text("Managing Director", 16, 36, 206, GREY))
     rows = [
         ("+91 98765 43210", 244),
-        ("info@niyakrish.com   •   www.niyakrish.com", 268),
+        ("info@niya.in   •   www.niya.in", 268),
         ("Plot 42, Industrial Area Phase II", 292),
     ]
     for txt, y in rows:
@@ -389,12 +502,13 @@ def mockup_business_card():
 
     # back
     back = [f'<rect width="{CW}" height="{CH}" rx="16" fill="{BLUE}"/>']
-    s = 0.62
+    s = 0.56
     back.append(icon(WHITE, ORANGE, WHITE, tx=CW / 2 - (ICON_X + ICON_W / 2) * s,
-                     ty=44 - ICON_Y * s, s=s))
-    back.append(wordmark(CW / 2, 218, 36, WHITE, ORANGE, anchor="middle", track_em=0.05))
-    back.append(f'<rect x="{CW / 2 - 50}" y="238" width="100" height="3" fill="{ORANGE}"/>')
-    back.append(bold.text("READY MIX CONCRETE • BLOCKS • PAVERS", 13, CW / 2, 268,
+                     ty=46 - ICON_Y * s, s=s))
+    back.append(wordmark(CW / 2, 226, 36, WHITE, ORANGE, anchor="middle",
+                         track_em=0.16))
+    back.append(f'<rect x="{CW / 2 - 50}" y="244" width="100" height="3" fill="{ORANGE}"/>')
+    back.append(bold.text("READY MIX CONCRETE • BLOCKS • PAVERS", 13, CW / 2, 274,
                           LIGHT, 0.1, "middle"))
 
     b.append(card(140, 150, -3, "".join(front)))
@@ -407,30 +521,29 @@ def mockup_business_card():
 # -------------------------------------------------------------- build ----
 def main():
     files = {
-        "logos/svg/niyakrish-logo-primary.svg":
+        "logos/svg/niya-logo-primary.svg":
             logo_primary(GREY, ORANGE, BLUE, GREY),
-        "logos/svg/niyakrish-logo-horizontal.svg":
+        "logos/svg/niya-logo-horizontal.svg":
             logo_horizontal(GREY, ORANGE, BLUE, GREY),
-        "logos/svg/niyakrish-logo-monogram.svg":
+        "logos/svg/niya-logo-monogram.svg":
             logo_monogram(GREY, ORANGE, BLUE),
-        "logos/svg/niyakrish-logo-emblem.svg": logo_emblem(),
-        "logos/svg/niyakrish-app-icon.svg": logo_app_icon(),
-        "logos/svg/niyakrish-logo-primary-bw.svg":
-            logo_primary(BLACK, BLACK, BLACK, BLACK, bg=WHITE)
-            .replace(BLUE, BLACK),
-        "logos/svg/niyakrish-logo-horizontal-bw.svg":
+        "logos/svg/niya-logo-emblem.svg": logo_emblem(),
+        "logos/svg/niya-app-icon.svg": logo_app_icon(),
+        "logos/svg/niya-logo-primary-bw.svg":
+            logo_primary(BLACK, BLACK, BLACK, BLACK, bg=WHITE),
+        "logos/svg/niya-logo-horizontal-bw.svg":
             logo_horizontal(BLACK, BLACK, BLACK, BLACK, bg=WHITE)
-            .replace(BLUE, BLACK).replace("#D1D5DB", BLACK),
-        "logos/svg/niyakrish-logo-monogram-bw.svg":
-            logo_monogram(BLACK, BLACK, BLACK, bg=WHITE).replace(BLUE, BLACK),
-        "logos/svg/niyakrish-logo-primary-reversed.svg":
+            .replace("#D1D5DB", BLACK),
+        "logos/svg/niya-logo-monogram-bw.svg":
+            logo_monogram(BLACK, BLACK, BLACK, bg=WHITE),
+        "logos/svg/niya-logo-primary-reversed.svg":
             logo_primary(WHITE, ORANGE, WHITE, LIGHT, bg=BLUE),
-        "mockups/svg/niyakrish-truck-branding.svg": mockup_truck(),
-        "mockups/svg/niyakrish-factory-signboard.svg": mockup_signboard(),
-        "mockups/svg/niyakrish-business-card.svg": mockup_business_card(),
+        "mockups/svg/niya-truck-branding.svg": mockup_truck(),
+        "mockups/svg/niya-factory-signboard.svg": mockup_signboard(),
+        "mockups/svg/niya-business-card.svg": mockup_business_card(),
     }
-    widths = {"niyakrish-app-icon": 512, "niyakrish-logo-monogram": 720,
-              "niyakrish-logo-monogram-bw": 720, "niyakrish-logo-emblem": 1000}
+    widths = {"niya-app-icon": 512, "niya-logo-monogram": 720,
+              "niya-logo-monogram-bw": 720, "niya-logo-emblem": 1000}
     for rel, content in files.items():
         write(rel, content)
         name = os.path.splitext(os.path.basename(rel))[0]

@@ -1,25 +1,39 @@
-# Niyakrish — Brand Identity
+# NIYA — Brand Identity
 
-Corporate logo system for **Niyakrish**, a construction materials company:
+Corporate identity for **NIYA**, a construction materials company:
 Ready Mix Concrete (RMC), concrete blocks, paver blocks, construction
 materials and infrastructure supply.
 
-![Primary logo](logos/png/niyakrish-logo-primary.png)
+![Primary logo](logos/png/niya-logo-primary.png)
 
 ## Design concept
 
-The mark is a letter **N** engineered from the company's own products:
+The mark is a **monolithic letter N**, engineered rather than drawn:
 
 | Element | Meaning |
 | --- | --- |
-| Two columns of stacked blocks (white mortar joints) | Concrete blocks, paver manufacturing, industrial scale |
+| Two solid precast columns with thin masonry joint lines | Concrete manufacturing, industrial scale, precision |
 | Orange structural diagonal beam | Engineering excellence, load-bearing strength |
-| Stepped tower top on the right column | Skyline / modern infrastructure development, growth |
+| Stepped crown on the taller right column | Skyline / infrastructure development, growth |
 | Deep blue foundation slab | Solid foundations, durability, trust |
 
-The geometry is built on a strict grid with no gradients or decorative
-detail, so the mark stays crisp from a favicon to a factory signboard, and
-remains fully recognizable in a single color.
+The v2 identity was developed after studying the visual language of major
+building-materials corporations (Cemex, Holcim, Heidelberg Materials) and
+current industrial branding practice: solid geometric masses, deliberate
+negative space, a restrained palette with one accent color, and bold
+engineered typography. No gradients, no decoration — the mark survives
+from a 24 px favicon to a highway-scale signboard and stays fully
+recognizable in a single color.
+
+## Custom letterforms
+
+The **NIYA wordmark is a custom typeface**, not a font: squared
+industrial capitals (N, I, Y, A — plus K, R, S, H in the kit) drawn as
+vector polygons on a 100-unit cap grid with a 24-unit stroke, extended
+stance, wide tracking and optical kerning. The orange block "full stop"
+after NIYA is the brand's signature — a concrete block closing the name.
+Utility text (taglines, contact lines) uses a neutral industrial
+sans-serif converted to outlines, so every SVG is fully self-contained.
 
 ## Color palette
 
@@ -30,37 +44,30 @@ remains fully recognizable in a single color.
 | Accent | Deep Blue | `#0F172A` |
 | Background | White | `#FFFFFF` |
 
-## Typography
-
-Wordmark and tagline are set in a bold industrial sans-serif
-(Liberation Sans Bold) with wide tracking, **converted to vector
-outlines** — no fonts are required to reproduce any file. The orange
-block "full stop" after NIYAKRISH is part of the wordmark: a concrete
-block as the brand's signature.
-
 ## Files
 
 All masters are scalable SVG (`logos/svg`, `mockups/svg`); PNG renders are
-provided for quick use (`logos/png`, `mockups/png`).
+provided for quick use (`logos/png`, `mockups/png`). The previous concept
+iteration is kept in `archive/v1-concept` for comparison.
 
 | File | Use |
 | --- | --- |
-| `niyakrish-logo-primary` | Main corporate logo (icon above wordmark) |
-| `niyakrish-logo-horizontal` | Letterheads, website header, truck doors, invoices |
-| `niyakrish-logo-monogram` | Stand-alone N mark — helmets, favicons, watermarks |
-| `niyakrish-app-icon` | Mobile app / social media avatar (rounded square) |
-| `niyakrish-logo-emblem` | Premium circular emblem — seals, uniforms, badges |
-| `niyakrish-logo-primary-bw` / `-horizontal-bw` / `-monogram-bw` | Single-color print, stamps, engraving |
-| `niyakrish-logo-primary-reversed` | Dark backgrounds (deep blue) |
+| `niya-logo-primary` | Main corporate logo (icon above wordmark) |
+| `niya-logo-horizontal` | Letterheads, website header, invoices, truck doors |
+| `niya-logo-monogram` | Stand-alone N mark — helmets, favicons, watermarks |
+| `niya-app-icon` | Mobile app / social media avatar (rounded square) |
+| `niya-logo-emblem` | Premium circular emblem — seals, uniforms, badges |
+| `niya-logo-primary-bw` / `-horizontal-bw` / `-monogram-bw` | Single-color print, stamps, engraving |
+| `niya-logo-primary-reversed` | Dark backgrounds (deep blue) |
 | `mockups/…truck-branding` | RMC mixer truck livery concept |
 | `mockups/…factory-signboard` | Factory fascia signboard concept |
 | `mockups/…business-card` | Business card concept, front & back (contact details are placeholders) |
 
 ## Usage rules
 
-- **Clear space:** keep a margin of one block course (the height of one
-  brick in the icon) around the logo on all sides.
-- **Minimum sizes:** monogram 24 px, horizontal lockup 120 px wide.
+- **Clear space:** keep a margin equal to the foundation slab's height ×3
+  around the logo on all sides.
+- **Minimum sizes:** monogram 24 px, horizontal lockup 110 px wide.
 - On photographs or colored surfaces use the reversed or B/W version —
   never recolor the mark outside the palette above.
 - Don't rotate, outline, add shadows/gradients, or change the proportions
