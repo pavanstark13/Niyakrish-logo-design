@@ -8,40 +8,40 @@ materials and infrastructure supply.
 
 ![Primary logo](logos/png/niya-logo-primary.png)
 
-## Design concept
+## Design concept — "The Delta Standard" (v5, built from scratch)
 
-The mark is a **hexagonal cell carrying a negative-space N**:
+The mark is an **equilateral triangle assembled from three mitred
+beams, locked around an orange core**:
 
 | Element | Meaning |
 | --- | --- |
-| Deep-blue hexagon | Aggregate stone, bolt head, engineered cell — industry and precision |
-| Negative-space N | NIYA, carved out of solid material |
-| Orange structural diagonal | Engineering energy, load transfer |
+| The triangle | The strongest form in structural engineering |
+| Three jointed beams | The three product lines: concrete, blocks, aggregates |
+| Orange core | Strength, delivered — the promise at the centre |
 
-The direction was chosen from **five distinct concept explorations**
-(`logos/concepts/`, preview at `logos/preview.html`) generated with the
-open-source [logo-designer Claude skill](https://github.com/neonwatty/logo-designer-skill)
-workflow: hexagon-N, aggregate peak, strata chevrons, pure typographic,
-and drum-circle. The hexagon won on corporate weight, ownability, and
-small-size legibility (still reads at 16 px).
+The custom letterforms are drawn on a **single 1:2 diagonal grid** —
+every diagonal in N, Y and A sits at the same angle. The **A of NIYA is
+itself a triangle carrying the same orange core as its counter**, so the
+mark and the name share one geometry (the principle behind classic
+Indian industrial identities like SAIL and HDFC: one geometric idea,
+unified across symbol and type).
+
+Earlier explorations are preserved in `logos/concepts/`,
+`logos/iterations/` and `archive/`.
 
 ## Custom letterforms
 
-The **NIYA wordmark is a custom typeface**, not a font: squared
-industrial capitals (N, I, Y, A — plus K, R, S, H in the kit) drawn as
-vector polygons on a 100-unit cap grid with a 24-unit stroke, extended
-stance, wide tracking and optical kerning. The orange block "full stop"
-after NIYA is the brand's signature — a concrete block closing the name.
-Utility text (taglines, contact lines) uses a neutral industrial
-sans-serif converted to outlines, so every SVG is fully self-contained.
+N, I, Y, A drawn as vector polygons: cap 100, stroke 26, unified 1:2
+diagonals, optical Y–A kerning. No font is used anywhere in the logo.
 
 ## Color palette
 
 | Role | Name | Hex |
 | --- | --- | --- |
-| Primary | Concrete Grey | `#4A4A4A` |
-| Secondary | Construction Orange | `#F97316` |
-| Accent | Deep Blue | `#0F172A` |
+| Primary | Engineering Blue | `#16418C` |
+| Secondary | Safety Orange | `#FF7A1A` |
+| Support | Steel | `#5B6B7C` |
+| Single-colour | Ink | `#101418` |
 | Background | White | `#FFFFFF` |
 
 ## Files
