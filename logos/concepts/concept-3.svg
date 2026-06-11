@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512">
+  <rect id="background" width="1024" height="512" fill="#FFFFFF"/>
+  <g id="icon">
+    <!-- Strata ascent mark: three material layers stepping up-forward, 45-degree cut right ends -->
+    <path d="M80 296 H280 L232 344 H80 Z" fill="#0F172A"/>
+    <path d="M120 232 H300 L252 280 H120 Z" fill="#4A4A4A"/>
+    <path d="M160 168 H320 L272 216 H160 Z" fill="#F97316"/>
+  </g>
+  <g id="wordmark">
+    <text x="380" y="290" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="150" letter-spacing="24" fill="#0F172A">NIYA</text>
+  </g>
+  <g id="tagline">
+    <text x="384" y="336" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="26" letter-spacing="6" fill="#4A4A4A">STRENGTH DELIVERED</text>
+  </g>
+</svg>

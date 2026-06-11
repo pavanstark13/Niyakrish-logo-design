@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Generate the full NIYA brand identity: logos, variants and mockups.
 
-v2 — engineered identity:
-  * Mark: a monolithic letter N — two solid precast columns with masonry
-    joint lines, an orange structural diagonal, a stepped tower crown and
-    a deep-blue foundation slab.
-  * Wordmark NIYA: fully custom squared industrial letterforms (drawn as
-    polygons, no font), in the language of engineering corporations.
+v4 — hexagon identity (chosen from 5 concept directions, see
+tools/build_concepts.py and logos/concepts/):
+  * Mark: a deep-blue hexagon — aggregate stone / bolt head / precast
+    cell — carrying a negative-space N with an orange structural
+    diagonal.
+  * Wordmark NIYA: custom squared industrial letterforms (drawn as
+    polygons, no font) with optical kerning and an orange block
+    full-stop.
+  * Tagline: STRENGTH DELIVERED.
 
 Small/utility text uses Liberation Sans converted to outlines with
 fontTools, so every SVG is fully self-contained. PNG previews are
@@ -209,20 +212,19 @@ brand = BrandType()
 
 
 # ---------------------------------------------------------------- icon ----
-# Design space of the mark: x 0..124, y 0..160 (w=124, h=160).
-ICON_X, ICON_Y, ICON_W, ICON_H = 0, 0, 124, 160
+# Design space of the mark: x 0..168, y 0..146 (flat-top hexagon).
+ICON_X, ICON_Y, ICON_W, ICON_H = 0, 0, 168, 146
 
 
-def icon(grey=GREY, orange=ORANGE, blue=BLUE, tx=0.0, ty=0.0, s=1.0):
-    """The NIYA mark, v3: a precision-engineered N — two monolithic
-    columns and a structural diagonal separated by hairline joints,
-    grounded on a slim foundation bar. Echoes the wordmark's N exactly."""
+def icon(hex_fill=BLUE, n_fill=WHITE, diag_fill=ORANGE, tx=0.0, ty=0.0, s=1.0):
+    """The NIYA mark, v4: a hexagonal cell (aggregate stone / bolt head)
+    carrying a negative-space N with a structural orange diagonal."""
     g = [f'<g transform="translate({tx:.2f} {ty:.2f}) scale({s:.4f})">']
-    g.append(f'<rect x="0" y="0" width="38" height="144" fill="{grey}"/>')
-    g.append(f'<rect x="86" y="0" width="38" height="144" fill="{grey}"/>')
-    g.append(f'<polygon points="41,5.25 83,78.75 83,138.75 41,65.25" '
-             f'fill="{orange}"/>')
-    g.append(f'<rect x="0" y="150" width="124" height="10" fill="{blue}"/>')
+    g.append('<polygon points="0,73 42,0 126,0 168,73 126,146 42,146" '
+             f'fill="{hex_fill}"/>')
+    g.append(f'<rect x="52" y="34" width="18" height="78" fill="{n_fill}"/>')
+    g.append(f'<rect x="98" y="34" width="18" height="78" fill="{n_fill}"/>')
+    g.append(f'<polygon points="72,34 96,80 96,112 72,66" fill="{diag_fill}"/>')
     g.append("</g>")
     return "".join(g)
 
@@ -254,11 +256,11 @@ def render(svg_rel, png_rel, width):
 
 # ------------------------------------------------------- logo lockups ----
 WORD = "NIYA"
-TAG_SHORT = "CONSTRUCTION MATERIALS"
-TAG_FULL = "CONCRETE  •  BLOCKS  •  INFRASTRUCTURE"
+TAGLINE = "STRENGTH DELIVERED"
+PRODUCTS = "CONCRETE  •  BLOCKS  •  AGGREGATES"
 
 
-def wordmark(x, y, cap, fill, accent, anchor="start", track_em=0.18):
+def wordmark(x, y, cap, fill, accent, anchor="start", track_em=0.16):
     """NIYA in the custom letterforms, with the orange block full-stop."""
     w = brand.width(WORD, cap, track_em)
     sq = 0.22 * cap
@@ -275,57 +277,59 @@ def wordmark(x, y, cap, fill, accent, anchor="start", track_em=0.18):
     return "".join(parts)
 
 
-def wm_full_width(cap, track_em=0.18):
+def wm_full_width(cap, track_em=0.16):
     return brand.width(WORD, cap, track_em) + 0.40 * cap
 
 
-def logo_primary(grey, orange, blue, tag_fill, bg=None):
-    W, H = 480, 528
+def tag_under(x, y, cap, fill, tsize=20, text=TAGLINE):
+    """Tagline justified to the wordmark width, starting at x."""
+    tw = wm_full_width(cap)
+    track = bold.track_to_fit(text, tsize, tw)
+    return bold.text(text, tsize, x, y, fill, track)
+
+
+def logo_primary(hexc, nc, diagc, word, accent, tag, bg=None):
+    W, H = 480, 478
+    body = []
+    s = 1.35
+    body.append(icon(hexc, nc, diagc,
+                     tx=W / 2 - (ICON_W / 2) * s, ty=40, s=s))
+    cap = 95
+    body.append(wordmark(W / 2, 380, cap, word, accent, anchor="middle"))
+    x0 = W / 2 - wm_full_width(cap) / 2
+    body.append(tag_under(x0, 430, cap, tag))
+    return svg(W, H, "".join(body), bg)
+
+
+def logo_horizontal(hexc, nc, diagc, word, accent, tag, divider, bg=None):
+    W, H = 890, 340
     body = []
     s = 1.5
-    body.append(icon(grey, orange, blue,
-                     tx=W / 2 - (ICON_X + ICON_W / 2) * s, ty=40 - ICON_Y * s, s=s))
-    cap = 95
-    body.append(wordmark(W / 2, 435, cap, blue, orange, anchor="middle"))
-    tsize = 20
-    tw = wm_full_width(cap) - 6
-    track = bold.track_to_fit(TAG_SHORT, tsize, tw)
-    body.append(bold.text(TAG_SHORT, tsize, W / 2, 488, tag_fill, track, "middle"))
-    return svg(W, H, "".join(body), bg)
-
-
-def logo_horizontal(grey, orange, blue, tag_fill, bg=None):
-    W, H = 820, 340
-    body = []
-    s = 1.45
-    body.append(icon(grey, orange, blue, tx=64 - ICON_X * s,
-                     ty=H / 2 - (ICON_Y + ICON_H / 2) * s, s=s))
+    body.append(icon(hexc, nc, diagc, tx=64, ty=(H - ICON_H * s) / 2, s=s))
     x0 = 64 + ICON_W * s + 68
-    body.append(f'<rect x="{x0 - 34}" y="58" width="3" height="224" fill="#D1D5DB"/>')
+    body.append(f'<rect x="{x0 - 34}" y="70" width="3" height="200" '
+                f'fill="{divider}"/>')
     cap = 128
-    body.append(wordmark(x0, 190, cap, blue, orange, track_em=0.16))
-    tsize = 22
-    tw = brand.width(WORD, cap, 0.16) + 0.40 * cap
-    track = bold.track_to_fit(TAG_SHORT, tsize, tw)
-    body.append(bold.text(TAG_SHORT, tsize, x0 + 2, 248, tag_fill, track))
+    body.append(wordmark(x0, 190, cap, word, accent, track_em=0.16))
+    body.append(tag_under(x0 + 2, 246, cap, tag, tsize=22))
     return svg(W, H, "".join(body), bg)
 
 
-def logo_monogram(grey, orange, blue, bg=None):
+def logo_monogram(hexc, nc, diagc, bg=None):
     W = 240
-    s = 1.15
-    body = icon(grey, orange, blue, tx=(W - ICON_W * s) / 2 - ICON_X * s,
-                ty=(W - ICON_H * s) / 2 - ICON_Y * s, s=s)
+    s = 1.25
+    body = icon(hexc, nc, diagc, tx=(W - ICON_W * s) / 2,
+                ty=(W - ICON_H * s) / 2, s=s)
     return svg(W, W, body, bg)
 
 
 def logo_app_icon():
     W = 512
     body = [f'<rect width="{W}" height="{W}" rx="100" fill="{BLUE}"/>']
-    s = 1.9
-    body.append(icon(WHITE, ORANGE, WHITE,
-                     tx=W / 2 - (ICON_X + ICON_W / 2) * s,
-                     ty=W / 2 - (ICON_Y + ICON_H / 2) * s, s=s))
+    s = 2.25
+    body.append(icon(WHITE, BLUE, ORANGE,
+                     tx=W / 2 - (ICON_W / 2) * s,
+                     ty=W / 2 - (ICON_H / 2) * s, s=s))
     return svg(W, W, "".join(body))
 
 
@@ -337,12 +341,11 @@ def logo_emblem():
         f'<circle cx="{c}" cy="{c}" r="148" fill="{WHITE}"/>',
         f'<circle cx="{c}" cy="{c}" r="155" fill="none" stroke="{ORANGE}" stroke-width="4"/>',
     ]
-    body.append(icon(GREY, ORANGE, BLUE,
-                     tx=c - (ICON_X + ICON_W / 2) * 1.1,
-                     ty=c - (ICON_Y + ICON_H / 2) * 1.1, s=1.1))
+    s = 1.5
+    body.append(icon(BLUE, WHITE, ORANGE,
+                     tx=c - (ICON_W / 2) * s, ty=c - (ICON_H / 2) * s, s=s))
     body.append(brand.arc_text(WORD, 34, c, c, 164, WHITE, 0.85))
-    body.append(bold.arc_text("CONSTRUCTION MATERIALS", 22, c, c, 186,
-                              LIGHT, 0.12, bottom=True))
+    body.append(bold.arc_text(TAGLINE, 22, c, c, 186, LIGHT, 0.14, bottom=True))
     for sgn in (-1, 1):
         x = c + sgn * 177
         body.append(
@@ -383,7 +386,7 @@ def mockup_truck():
     b.append(f'<rect x="138" y="530" width="24" height="64" fill="{ORANGE}"/>')
     b.append('<rect x="146" y="480" width="14" height="26" fill="#FACC15"/>')
     b.append('<rect x="290" y="348" width="5" height="246" fill="#0B1120"/>')
-    b.append(icon(WHITE, ORANGE, WHITE, tx=302, ty=462, s=0.40))
+    b.append(icon(WHITE, BLUE, ORANGE, tx=298, ty=468, s=0.5))
 
     # rear pedestal + charge hopper
     b.append('<polygon points="915,560 1055,560 1025,420 945,420" fill="#4A4A4A"/>')
@@ -445,16 +448,16 @@ def mockup_signboard():
     # fascia sign
     b.append(f'<rect x="80" y="230" width="1240" height="160" fill="{BLUE}"/>')
     b.append(f'<rect x="80" y="390" width="1240" height="12" fill="{ORANGE}"/>')
-    s = 0.72
-    ix = 483
-    b.append(icon(WHITE, ORANGE, WHITE, tx=ix - ICON_X * s,
-                  ty=310 - (ICON_Y + ICON_H / 2) * s, s=s))
-    x0 = ix + ICON_W * s + 52
+    s = 0.86
+    ix = 470
+    b.append(icon(WHITE, BLUE, ORANGE, tx=ix,
+                  ty=310 - (ICON_H / 2) * s, s=s))
+    x0 = ix + ICON_W * s + 50
     cap = 86
     b.append(wordmark(x0, 336, cap, WHITE, ORANGE, track_em=0.16))
-    tw = brand.width(WORD, cap, 0.16) + 0.40 * cap
-    track = bold.track_to_fit(TAG_FULL, 17, tw)
-    b.append(bold.text(TAG_FULL, 17, x0 + 1, 366, LIGHT, track))
+    tw = wm_full_width(cap)
+    track = bold.track_to_fit(PRODUCTS, 17, tw)
+    b.append(bold.text(PRODUCTS, 17, x0 + 1, 366, LIGHT, track))
     # block pallets in the yard
     for px, py in ((150, 560), (330, 585)):
         for r in range(3):
@@ -484,10 +487,9 @@ def mockup_business_card():
     front.append(f'<g clip-path="url(#cardf)">'
                  f'<rect y="{CH - 16}" width="{CW}" height="16" fill="{ORANGE}"/>'
                  f'<rect y="{CH - 16}" width="150" height="16" fill="{BLUE}"/></g>')
-    front.append(icon(GREY, ORANGE, BLUE, tx=36 - ICON_X * 0.40,
-                      ty=30 - ICON_Y * 0.40, s=0.40))
-    front.append(wordmark(104, 72, 32, BLUE, ORANGE, track_em=0.16))
-    front.append(bold.text("CONSTRUCTION MATERIALS", 12.5, 106, 94, GREY, 0.12))
+    front.append(icon(BLUE, WHITE, ORANGE, tx=36, ty=30, s=0.45))
+    front.append(wordmark(130, 70, 32, BLUE, ORANGE, track_em=0.16))
+    front.append(bold.text(TAGLINE, 12.5, 132, 92, GREY, 0.12))
     front.append(bold.text("PAVAN KUMAR", 25, 36, 182, BLUE, 0.04))
     front.append(reg.text("Managing Director", 16, 36, 206, GREY))
     rows = [
@@ -501,14 +503,14 @@ def mockup_business_card():
 
     # back
     back = [f'<rect width="{CW}" height="{CH}" rx="16" fill="{BLUE}"/>']
-    s = 0.58
-    back.append(icon(WHITE, ORANGE, WHITE, tx=CW / 2 - (ICON_X + ICON_W / 2) * s,
-                     ty=44 - ICON_Y * s, s=s))
+    s = 0.66
+    back.append(icon(WHITE, BLUE, ORANGE, tx=CW / 2 - (ICON_W / 2) * s,
+                     ty=46, s=s))
     back.append(wordmark(CW / 2, 214, 36, WHITE, ORANGE, anchor="middle",
                          track_em=0.16))
     back.append(f'<rect x="{CW / 2 - 50}" y="234" width="100" height="3" fill="{ORANGE}"/>')
-    back.append(bold.text("READY MIX CONCRETE  •  CONCRETE BLOCKS", 13, CW / 2, 264,
-                          LIGHT, 0.1, "middle"))
+    back.append(bold.text("READY MIX CONCRETE  •  BLOCKS  •  AGGREGATES",
+                          13, CW / 2, 264, LIGHT, 0.1, "middle"))
 
     b.append(card(140, 150, -3, "".join(front)))
     b.append(card(700, 320, 3, "".join(back)))
@@ -521,22 +523,22 @@ def mockup_business_card():
 def main():
     files = {
         "logos/svg/niya-logo-primary.svg":
-            logo_primary(GREY, ORANGE, BLUE, GREY),
+            logo_primary(BLUE, WHITE, ORANGE, BLUE, ORANGE, GREY),
         "logos/svg/niya-logo-horizontal.svg":
-            logo_horizontal(GREY, ORANGE, BLUE, GREY),
+            logo_horizontal(BLUE, WHITE, ORANGE, BLUE, ORANGE, GREY, "#D1D5DB"),
         "logos/svg/niya-logo-monogram.svg":
-            logo_monogram(GREY, ORANGE, BLUE),
+            logo_monogram(BLUE, WHITE, ORANGE),
         "logos/svg/niya-logo-emblem.svg": logo_emblem(),
         "logos/svg/niya-app-icon.svg": logo_app_icon(),
         "logos/svg/niya-logo-primary-bw.svg":
-            logo_primary(BLACK, BLACK, BLACK, BLACK, bg=WHITE),
+            logo_primary(BLACK, WHITE, WHITE, BLACK, BLACK, BLACK, bg=WHITE),
         "logos/svg/niya-logo-horizontal-bw.svg":
-            logo_horizontal(BLACK, BLACK, BLACK, BLACK, bg=WHITE)
-            .replace("#D1D5DB", BLACK),
+            logo_horizontal(BLACK, WHITE, WHITE, BLACK, BLACK, BLACK, BLACK,
+                            bg=WHITE),
         "logos/svg/niya-logo-monogram-bw.svg":
-            logo_monogram(BLACK, BLACK, BLACK, bg=WHITE),
+            logo_monogram(BLACK, WHITE, WHITE, bg=WHITE),
         "logos/svg/niya-logo-primary-reversed.svg":
-            logo_primary(WHITE, ORANGE, WHITE, LIGHT, bg=BLUE),
+            logo_primary(WHITE, BLUE, ORANGE, WHITE, ORANGE, LIGHT, bg=BLUE),
         "mockups/svg/niya-truck-branding.svg": mockup_truck(),
         "mockups/svg/niya-factory-signboard.svg": mockup_signboard(),
         "mockups/svg/niya-business-card.svg": mockup_business_card(),

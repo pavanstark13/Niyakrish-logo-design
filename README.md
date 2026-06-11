@@ -1,29 +1,29 @@
 # NIYA — Brand Identity
 
 Corporate identity for **NIYA**, a construction materials company:
-Ready Mix Concrete (RMC), concrete blocks, construction materials and
-infrastructure supply.
+Ready Mix Concrete (RMC), concrete blocks, aggregates, construction
+materials and infrastructure supply.
+
+**Tagline: STRENGTH DELIVERED**
 
 ![Primary logo](logos/png/niya-logo-primary.png)
 
 ## Design concept
 
-The mark is a **precision-engineered letter N** — neat, solid, corporate:
+The mark is a **hexagonal cell carrying a negative-space N**:
 
 | Element | Meaning |
 | --- | --- |
-| Two monolithic columns | Strength, industrial scale, permanence |
-| Orange structural diagonal | Engineering excellence, energy, load transfer |
-| Hairline expansion joints between the components | Precision manufacturing |
-| Slim deep-blue foundation bar | Solid foundations, durability, trust |
+| Deep-blue hexagon | Aggregate stone, bolt head, engineered cell — industry and precision |
+| Negative-space N | NIYA, carved out of solid material |
+| Orange structural diagonal | Engineering energy, load transfer |
 
-The icon is the wordmark's N enlarged — symbol and name share one
-geometry, so the brand stays coherent from a favicon to a fascia sign.
-The identity follows the visual language of major building-materials
-corporations (Cemex, Holcim, Heidelberg Materials) and current industrial
-branding practice: solid geometric masses, deliberate negative space, a
-restrained palette with one accent color, and bold engineered typography.
-No gradients, no decoration — fully recognizable in a single color.
+The direction was chosen from **five distinct concept explorations**
+(`logos/concepts/`, preview at `logos/preview.html`) generated with the
+open-source [logo-designer Claude skill](https://github.com/neonwatty/logo-designer-skill)
+workflow: hexagon-N, aggregate peak, strata chevrons, pure typographic,
+and drum-circle. The hexagon won on corporate weight, ownability, and
+small-size legibility (still reads at 16 px).
 
 ## Custom letterforms
 
