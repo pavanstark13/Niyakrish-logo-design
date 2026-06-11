@@ -209,22 +209,20 @@ brand = BrandType()
 
 
 # ---------------------------------------------------------------- icon ----
-# Design space of the mark: x 0..168, y 24..194 (w=168, h=170).
-ICON_X, ICON_Y, ICON_W, ICON_H = 0, 24, 168, 170
+# Design space of the mark: x 0..124, y 0..160 (w=124, h=160).
+ICON_X, ICON_Y, ICON_W, ICON_H = 0, 0, 124, 160
 
 
 def icon(grey=GREY, orange=ORANGE, blue=BLUE, tx=0.0, ty=0.0, s=1.0):
-    """The NIYA mark, v2: a monolithic N — solid precast columns with
-    masonry joints, structural diagonal, stepped tower crown, foundation."""
+    """The NIYA mark, v3: a precision-engineered N — two monolithic
+    columns and a structural diagonal separated by hairline joints,
+    grounded on a slim foundation bar. Echoes the wordmark's N exactly."""
     g = [f'<g transform="translate({tx:.2f} {ty:.2f}) scale({s:.4f})">']
-    g.append(f'<rect x="12" y="40" width="42" height="136" fill="{grey}"/>')
-    g.append(f'<rect x="114" y="52" width="42" height="124" fill="{grey}"/>')
-    g.append(f'<rect x="114" y="24" width="28" height="24" fill="{grey}"/>')
-    for y in (86, 130):                                  # precast joint lines
-        g.append(f'<rect x="12" y="{y}" width="42" height="4" fill="{WHITE}"/>')
-        g.append(f'<rect x="114" y="{y}" width="42" height="4" fill="{WHITE}"/>')
-    g.append(f'<polygon points="12,40 54,40 156,176 114,176" fill="{orange}"/>')
-    g.append(f'<rect x="0" y="182" width="168" height="12" fill="{blue}"/>')
+    g.append(f'<rect x="0" y="0" width="38" height="144" fill="{grey}"/>')
+    g.append(f'<rect x="86" y="0" width="38" height="144" fill="{grey}"/>')
+    g.append(f'<polygon points="41,5.25 83,78.75 83,138.75 41,65.25" '
+             f'fill="{orange}"/>')
+    g.append(f'<rect x="0" y="150" width="124" height="10" fill="{blue}"/>')
     g.append("</g>")
     return "".join(g)
 
@@ -282,22 +280,22 @@ def wm_full_width(cap, track_em=0.18):
 
 
 def logo_primary(grey, orange, blue, tag_fill, bg=None):
-    W, H = 480, 540
+    W, H = 480, 528
     body = []
     s = 1.5
     body.append(icon(grey, orange, blue,
                      tx=W / 2 - (ICON_X + ICON_W / 2) * s, ty=40 - ICON_Y * s, s=s))
     cap = 95
-    body.append(wordmark(W / 2, 450, cap, blue, orange, anchor="middle"))
+    body.append(wordmark(W / 2, 435, cap, blue, orange, anchor="middle"))
     tsize = 20
     tw = wm_full_width(cap) - 6
     track = bold.track_to_fit(TAG_SHORT, tsize, tw)
-    body.append(bold.text(TAG_SHORT, tsize, W / 2, 502, tag_fill, track, "middle"))
+    body.append(bold.text(TAG_SHORT, tsize, W / 2, 488, tag_fill, track, "middle"))
     return svg(W, H, "".join(body), bg)
 
 
 def logo_horizontal(grey, orange, blue, tag_fill, bg=None):
-    W, H = 900, 340
+    W, H = 820, 340
     body = []
     s = 1.45
     body.append(icon(grey, orange, blue, tx=64 - ICON_X * s,
@@ -315,15 +313,16 @@ def logo_horizontal(grey, orange, blue, tag_fill, bg=None):
 
 def logo_monogram(grey, orange, blue, bg=None):
     W = 240
-    body = icon(grey, orange, blue, tx=(W - ICON_W) / 2 - ICON_X,
-                ty=(W - ICON_H) / 2 - ICON_Y, s=1.0)
+    s = 1.15
+    body = icon(grey, orange, blue, tx=(W - ICON_W * s) / 2 - ICON_X * s,
+                ty=(W - ICON_H * s) / 2 - ICON_Y * s, s=s)
     return svg(W, W, body, bg)
 
 
 def logo_app_icon():
     W = 512
     body = [f'<rect width="{W}" height="{W}" rx="100" fill="{BLUE}"/>']
-    s = 1.55
+    s = 1.9
     body.append(icon(WHITE, ORANGE, WHITE,
                      tx=W / 2 - (ICON_X + ICON_W / 2) * s,
                      ty=W / 2 - (ICON_Y + ICON_H / 2) * s, s=s))
@@ -339,8 +338,8 @@ def logo_emblem():
         f'<circle cx="{c}" cy="{c}" r="155" fill="none" stroke="{ORANGE}" stroke-width="4"/>',
     ]
     body.append(icon(GREY, ORANGE, BLUE,
-                     tx=c - (ICON_X + ICON_W / 2) * 0.96,
-                     ty=c - (ICON_Y + ICON_H / 2) * 0.96, s=0.96))
+                     tx=c - (ICON_X + ICON_W / 2) * 1.1,
+                     ty=c - (ICON_Y + ICON_H / 2) * 1.1, s=1.1))
     body.append(brand.arc_text(WORD, 34, c, c, 164, WHITE, 0.85))
     body.append(bold.arc_text("CONSTRUCTION MATERIALS", 22, c, c, 186,
                               LIGHT, 0.12, bottom=True))
@@ -384,7 +383,7 @@ def mockup_truck():
     b.append(f'<rect x="138" y="530" width="24" height="64" fill="{ORANGE}"/>')
     b.append('<rect x="146" y="480" width="14" height="26" fill="#FACC15"/>')
     b.append('<rect x="290" y="348" width="5" height="246" fill="#0B1120"/>')
-    b.append(icon(WHITE, ORANGE, WHITE, tx=302, ty=460, s=0.36))
+    b.append(icon(WHITE, ORANGE, WHITE, tx=302, ty=462, s=0.40))
 
     # rear pedestal + charge hopper
     b.append('<polygon points="915,560 1055,560 1025,420 945,420" fill="#4A4A4A"/>')
@@ -447,15 +446,15 @@ def mockup_signboard():
     b.append(f'<rect x="80" y="230" width="1240" height="160" fill="{BLUE}"/>')
     b.append(f'<rect x="80" y="390" width="1240" height="12" fill="{ORANGE}"/>')
     s = 0.72
-    ix = 400
+    ix = 483
     b.append(icon(WHITE, ORANGE, WHITE, tx=ix - ICON_X * s,
                   ty=310 - (ICON_Y + ICON_H / 2) * s, s=s))
     x0 = ix + ICON_W * s + 52
     cap = 86
-    b.append(wordmark(x0, 326, cap, WHITE, ORANGE, track_em=0.16))
+    b.append(wordmark(x0, 336, cap, WHITE, ORANGE, track_em=0.16))
     tw = brand.width(WORD, cap, 0.16) + 0.40 * cap
     track = bold.track_to_fit(TAG_FULL, 17, tw)
-    b.append(bold.text(TAG_FULL, 17, x0 + 1, 358, LIGHT, track))
+    b.append(bold.text(TAG_FULL, 17, x0 + 1, 366, LIGHT, track))
     # block pallets in the yard
     for px, py in ((150, 560), (330, 585)):
         for r in range(3):
@@ -485,10 +484,10 @@ def mockup_business_card():
     front.append(f'<g clip-path="url(#cardf)">'
                  f'<rect y="{CH - 16}" width="{CW}" height="16" fill="{ORANGE}"/>'
                  f'<rect y="{CH - 16}" width="150" height="16" fill="{BLUE}"/></g>')
-    front.append(icon(GREY, ORANGE, BLUE, tx=36 - ICON_X * 0.42,
-                      ty=32 - ICON_Y * 0.42, s=0.42))
-    front.append(wordmark(124, 76, 34, BLUE, ORANGE, track_em=0.16))
-    front.append(bold.text("CONSTRUCTION MATERIALS", 12.5, 126, 96, GREY, 0.12))
+    front.append(icon(GREY, ORANGE, BLUE, tx=36 - ICON_X * 0.40,
+                      ty=30 - ICON_Y * 0.40, s=0.40))
+    front.append(wordmark(104, 72, 32, BLUE, ORANGE, track_em=0.16))
+    front.append(bold.text("CONSTRUCTION MATERIALS", 12.5, 106, 94, GREY, 0.12))
     front.append(bold.text("PAVAN KUMAR", 25, 36, 182, BLUE, 0.04))
     front.append(reg.text("Managing Director", 16, 36, 206, GREY))
     rows = [
@@ -502,13 +501,13 @@ def mockup_business_card():
 
     # back
     back = [f'<rect width="{CW}" height="{CH}" rx="16" fill="{BLUE}"/>']
-    s = 0.56
+    s = 0.58
     back.append(icon(WHITE, ORANGE, WHITE, tx=CW / 2 - (ICON_X + ICON_W / 2) * s,
-                     ty=46 - ICON_Y * s, s=s))
-    back.append(wordmark(CW / 2, 226, 36, WHITE, ORANGE, anchor="middle",
+                     ty=44 - ICON_Y * s, s=s))
+    back.append(wordmark(CW / 2, 214, 36, WHITE, ORANGE, anchor="middle",
                          track_em=0.16))
-    back.append(f'<rect x="{CW / 2 - 50}" y="244" width="100" height="3" fill="{ORANGE}"/>')
-    back.append(bold.text("READY MIX CONCRETE • BLOCKS • PAVERS", 13, CW / 2, 274,
+    back.append(f'<rect x="{CW / 2 - 50}" y="234" width="100" height="3" fill="{ORANGE}"/>')
+    back.append(bold.text("READY MIX CONCRETE  •  CONCRETE BLOCKS", 13, CW / 2, 264,
                           LIGHT, 0.1, "middle"))
 
     b.append(card(140, 150, -3, "".join(front)))

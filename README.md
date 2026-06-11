@@ -1,29 +1,29 @@
 # NIYA — Brand Identity
 
 Corporate identity for **NIYA**, a construction materials company:
-Ready Mix Concrete (RMC), concrete blocks, paver blocks, construction
-materials and infrastructure supply.
+Ready Mix Concrete (RMC), concrete blocks, construction materials and
+infrastructure supply.
 
 ![Primary logo](logos/png/niya-logo-primary.png)
 
 ## Design concept
 
-The mark is a **monolithic letter N**, engineered rather than drawn:
+The mark is a **precision-engineered letter N** — neat, solid, corporate:
 
 | Element | Meaning |
 | --- | --- |
-| Two solid precast columns with thin masonry joint lines | Concrete manufacturing, industrial scale, precision |
-| Orange structural diagonal beam | Engineering excellence, load-bearing strength |
-| Stepped crown on the taller right column | Skyline / infrastructure development, growth |
-| Deep blue foundation slab | Solid foundations, durability, trust |
+| Two monolithic columns | Strength, industrial scale, permanence |
+| Orange structural diagonal | Engineering excellence, energy, load transfer |
+| Hairline expansion joints between the components | Precision manufacturing |
+| Slim deep-blue foundation bar | Solid foundations, durability, trust |
 
-The v2 identity was developed after studying the visual language of major
-building-materials corporations (Cemex, Holcim, Heidelberg Materials) and
-current industrial branding practice: solid geometric masses, deliberate
-negative space, a restrained palette with one accent color, and bold
-engineered typography. No gradients, no decoration — the mark survives
-from a 24 px favicon to a highway-scale signboard and stays fully
-recognizable in a single color.
+The icon is the wordmark's N enlarged — symbol and name share one
+geometry, so the brand stays coherent from a favicon to a fascia sign.
+The identity follows the visual language of major building-materials
+corporations (Cemex, Holcim, Heidelberg Materials) and current industrial
+branding practice: solid geometric masses, deliberate negative space, a
+restrained palette with one accent color, and bold engineered typography.
+No gradients, no decoration — fully recognizable in a single color.
 
 ## Custom letterforms
 
