@@ -47,7 +47,7 @@ G5 = {
                "L0 100 Z M63 26 L81 62 L45 62 Z"),
 }
 K5 = {("Y", "A"): -22}
-TRACK = 0.12  # uniform letter-spacing (em) across the wordmark
+TRACK = 0.20  # uniform letter-spacing (em) across the wordmark
 A_CORE = "63,30 78.4,59.2 47.6,59.2"      # orange counter, slightly inset
 
 
