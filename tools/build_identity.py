@@ -46,7 +46,9 @@ G5 = {
     "A": (126, "M50 0 L76 0 L126 100 L100 100 L92 84 L34 84 L26 100 "
                "L0 100 Z M63 26 L81 62 L45 62 Z"),
 }
-K5 = {("Y", "A"): -22}
+# Optical pair corrections: the straight-stem pairs N-I and I-Y need
+# extra air (N-I most: two full-height verticals), Y-A tucks together.
+K5 = {("N", "I"): 8, ("I", "Y"): 4, ("Y", "A"): -22}
 A_CORE = "63,30 78.4,59.2 47.6,59.2"      # orange counter, slightly inset
 
 
