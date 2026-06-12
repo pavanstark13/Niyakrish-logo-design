@@ -32,8 +32,9 @@ GSTIN = "29AAKCN0823D1ZM"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGO = os.path.join(ROOT, "logos", "png", "niya-logo-horizontal.png")
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                   "NIYAKRISH-Purchase-Order-Letterhead.docx")
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT_PO = os.path.join(HERE, "NIYAKRISH-Purchase-Order-Letterhead.docx")
+OUT_LETTER = os.path.join(HERE, "NIYAKRISH-Letterhead.docx")
 
 
 def rgb(hexstr):
@@ -144,7 +145,8 @@ def cell_text(cell, text, size=10, bold=False, color=INK,
     return p
 
 
-def build():
+def _new_letterhead_doc():
+    """A4 document with the NIYAKRISH letterhead header and footer."""
     doc = Document()
 
     style = doc.styles["Normal"]
@@ -233,6 +235,12 @@ def build():
     pBdr = pPr.find(qn("w:pBdr"))
     bottom = pBdr.find(qn("w:bottom"))
     bottom.tag = qn("w:top")
+
+    return doc
+
+
+def build_po():
+    doc = _new_letterhead_doc()
 
     # ---------------- title ---------------------------------------------
     title = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
@@ -440,9 +448,70 @@ def build():
             "letterhead and signed by an authorised signatory.",
             size=7.5, italic=True, color=STEEL)
 
-    doc.save(OUT)
-    print(f"Saved: {OUT}")
+    doc.save(OUT_PO)
+    print(f"Saved: {OUT_PO}")
+
+
+def build_letter():
+    """Blank correspondence letterhead with a standard letter skeleton."""
+    doc = _new_letterhead_doc()
+
+    meta = doc.add_table(rows=1, cols=2)
+    no_borders(meta)
+    fixed_layout(meta, [Mm(89), Mm(89)])
+    cell_text(meta.cell(0, 0), "Ref. No.: NIPL/______/25-26", size=10)
+    cell_text(meta.cell(0, 1), "Date: ______________", size=10,
+              align=WD_ALIGN_PARAGRAPH.RIGHT)
+
+    p = doc.add_paragraph()
+    tight(p, before=14, after=2)
+    add_run(p, "To,", size=10)
+    for _ in range(3):
+        p = doc.add_paragraph()
+        tight(p, after=2)
+        add_run(p, "_______________________________", size=10, color=STEEL)
+
+    p = doc.add_paragraph()
+    tight(p, before=10, after=2)
+    add_run(p, "Subject: ", size=10, bold=True)
+    add_run(p, "_" * 76, size=10, color=STEEL)
+
+    p = doc.add_paragraph()
+    tight(p, before=10, after=2)
+    add_run(p, "Dear Sir / Madam,", size=10)
+
+    p = doc.add_paragraph()
+    tight(p, before=8, after=2)
+    add_run(p, "[Type the letter body here]", size=10, italic=True,
+            color=STEEL)
+    for _ in range(10):
+        tight(doc.add_paragraph(), after=2)
+
+    p = doc.add_paragraph()
+    tight(p, before=8, after=2)
+    add_run(p, "Thanking you,", size=10)
+    p = doc.add_paragraph()
+    tight(p, before=6, after=2)
+    add_run(p, "Yours faithfully,", size=10)
+    p = doc.add_paragraph()
+    tight(p, after=42)
+    add_run(p, f"For {COMPANY}", size=10, bold=True, color=BLUE)
+    p = doc.add_paragraph()
+    tight(p)
+    add_run(p, "Authorised Signatory", size=10, bold=True)
+    p = doc.add_paragraph()
+    tight(p, before=4)
+    add_run(p, "Name: ____________________    "
+               "Designation: ____________________", size=9.5, color=STEEL)
+    p = doc.add_paragraph()
+    tight(p, before=8)
+    add_run(p, "Encl.: ", size=9.5, bold=True, color=STEEL)
+    add_run(p, "______________________________", size=9.5, color=STEEL)
+
+    doc.save(OUT_LETTER)
+    print(f"Saved: {OUT_LETTER}")
 
 
 if __name__ == "__main__":
-    build()
+    build_po()
+    build_letter()

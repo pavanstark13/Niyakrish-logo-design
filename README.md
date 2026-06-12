@@ -63,6 +63,30 @@ iteration is kept in `archive/v1-concept` for comparison.
 | `mockups/…factory-signboard` | Factory fascia signboard concept |
 | `mockups/…business-card` | Business card concept, front & back (contact details are placeholders) |
 
+## Stationery
+
+Print-ready company stationery for **NIYAKRISH INDUSTRIES PRIVATE
+LIMITED** (GSTIN 29AAKCN0823D1ZM) lives in `stationery/`:
+
+| File | What it is |
+| --- | --- |
+| `NIYAKRISH-Letterhead.docx` | Editable Word letterhead with a standard letter skeleton |
+| `NIYAKRISH-Purchase-Order-Letterhead.docx` | Purchase order format on the letterhead (GST items table, T&C) |
+| `pdf/niya-business-card.pdf` | Business card, 89 × 51 mm, front + back, vector print master |
+| `pdf/niya-brochure-trifold.pdf` | A4 tri-fold brochure, outside + inside, vector print master |
+| `pdf/niya-letterhead-a4.pdf` | A4 letterhead print master |
+| `pdf/niya-envelope-dl.pdf` | DL envelope, 220 × 110 mm |
+
+SVG masters are in `stationery/svg`, PNG previews in `stationery/png`.
+Phone, email, website and CIN are placeholders — update them in
+`tools/build_stationery.py` / `stationery/generate_po_letterhead.py`
+and rebuild:
+
+```bash
+python3 tools/build_stationery.py            # cards, brochure, envelope
+python3 stationery/generate_po_letterhead.py # Word letterheads
+```
+
 ## Usage rules
 
 - **Clear space:** keep a margin equal to the foundation slab's height ×3
