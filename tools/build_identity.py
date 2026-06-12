@@ -46,9 +46,8 @@ G5 = {
     "A": (126, "M50 0 L76 0 L126 100 L100 100 L92 84 L34 84 L26 100 "
                "L0 100 Z M63 26 L81 62 L45 62 Z"),
 }
-# Optical pair corrections: the straight-stem pairs N-I and I-Y need
-# extra air (N-I most: two full-height verticals), Y-A tucks together.
-K5 = {("N", "I"): 8, ("I", "Y"): 4, ("Y", "A"): -22}
+K5 = {("Y", "A"): -22}
+TRACK = 0.12  # uniform letter-spacing (em) across the wordmark
 A_CORE = "63,30 78.4,59.2 47.6,59.2"      # orange counter, slightly inset
 
 
@@ -62,11 +61,11 @@ def _advances(text, cap, track_em):
     return out
 
 
-def word_width(cap, track_em=0.06):
+def word_width(cap, track_em=TRACK):
     return sum(_advances(WORD, cap, track_em))
 
 
-def wordmark(x, y, cap, fill, accent=ORANGE, anchor="start", track_em=0.06):
+def wordmark(x, y, cap, fill, accent=ORANGE, anchor="start", track_em=TRACK):
     """NIYA in the v5 letterforms; the A's counter carries the orange core."""
     w = word_width(cap, track_em)
     if anchor == "middle":
@@ -205,9 +204,9 @@ def patch_and_build_mockups():
     bl.icon = lambda a=NAVY, b=WHITE, c=ORANGE, tx=0.0, ty=0.0, s=1.0: \
         mark(a, b, c, tx, ty, s)
     bl.ICON_W, bl.ICON_H = MW, MH
-    bl.wordmark = lambda x, y, cap, fill, accent, anchor="start", track_em=0.06: \
+    bl.wordmark = lambda x, y, cap, fill, accent, anchor="start", track_em=TRACK: \
         wordmark(x, y, cap, fill, accent, anchor)
-    bl.wm_full_width = lambda cap, track_em=0.06: word_width(cap)
+    bl.wm_full_width = lambda cap, track_em=TRACK: word_width(cap)
     bl.BLUE, bl.ORANGE, bl.LIGHT = NAVY, ORANGE, LIGHTB
     bl.TAGLINE = TAGLINE
     return {
